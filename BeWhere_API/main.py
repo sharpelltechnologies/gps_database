@@ -3,7 +3,11 @@ from login import *
 def main(): 
    b = Bewhere()
    b.login()
-   b.snapshots()
+
+   ## BEWHERE API PRACTICE
+   #b.snapshots()
+   #b.stream()
+   #b.streamHistory()
 
 if __name__ == "__main__":
    main()
