@@ -22,8 +22,8 @@ def parseData(data):
     temp["id"] = i["id"]
     temp["longitude"] = i["longitude"]
     temp["latitude"] = i["latitude"]
-    temp["timestamp_epoch"] = i["timestamp"]
-    temp["timestamp"] = asctime(epochToLocaltime(i["timestamp"]))
+    temp["timestamp"] = i["timestamp"]
+    temp["timestampLong"] = asctime(epochToLocaltime(i["timestamp"]))
     module["points"].append(temp)
   return json.dumps(module, sort_keys=True, indent=4, separators=(',', ': '))
 
@@ -35,14 +35,12 @@ def localtimeToEpoch(timeStruct):
 def epochToLocaltime(epoch):
   return localtime(epoch/1000)
 
-def dateRange(start, end): 
-  b = Bewhere()
-  b.login()
+def dateRange(user, module, start, end): 
   stE = localtimeToEpoch(start) 
   etE = localtimeToEpoch(end)   
   st = epochToLocaltime(stE) 
   et = epochToLocaltime(etE)
-  data = b.stream(stE, etE)
+  data = user.stream(module, stE, etE)
   
   print "Human Start Time (PST): ", st 
   print "Epoch Start Time (milliseconds): ", 

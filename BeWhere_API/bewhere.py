@@ -4,7 +4,8 @@
 # - stream: get data in a specific date range for a specific module (2018/08/27)
 # - streamHistory: get data a specific date range for ALL modules (2018/08/27)
 #
-# usage: `$ python main.py login.py`
+# usage: `$ make`
+#
 
 import requests
 import hashlib
@@ -15,16 +16,11 @@ def printResponse(response, response_data):
   print(json.dumps(response_data, sort_keys=True, indent=4, separators=(',', ': ')))
 
 class Bewhere:
-  # NOTE: DO NOT COMMIT WITH CREDENTIALS -- copy and paste this instead :)
-  # self.username=<INSERT USERNAME>
-  # self.password=<INSERT PASSWORD>  
-  # self.account_id=<INSERT ACCOUNT ID> 
-  #
   ## sets up the local variables for the username/password
-  def __init__(self):
-  # self.username=<INSERT USERNAME>
-  # self.password=<INSERT PASSWORD>  
-  # self.account_id=<INSERT ACCOUNT ID> 
+  def __init__(self, username, password, account_key):
+    self.username=username
+    self.password=password
+    self.account_key=account_key 
 
   ## authenticates user and adds token to header for future requests
   def login(self):
@@ -63,7 +59,7 @@ class Bewhere:
     response = requests.post(url, json=data, headers=self.headers)
     response_data = response.json()
     # NOTE: DEBUG
-    #printResponse(response, response_data)
+    printResponse(response, response_data)
 
 ## returns the most recent data for all modules
  # add `/{id}` to get the most recent data for a specific module
@@ -76,8 +72,8 @@ class Bewhere:
     return response_data
 
 ## returns data in a specific date range for a specific module
-  def stream(self, startTime, endTime):
-    url = "https://api.bewhere.com" + "/accounts/" + self.account_key + "/streams/" + self.beacon1 + "?start=%d&end=%d" % (startTime, endTime)
+  def stream(self, module, startTime, endTime):
+    url = "https://api.bewhere.com" + "/accounts/" + self.account_key + "/streams/" + module + "?start=%d&end=%d" % (startTime, endTime)
     response = requests.get(url, headers=self.headers)
     response_data = response.json()
     # NOTE: DEBUG stmt
