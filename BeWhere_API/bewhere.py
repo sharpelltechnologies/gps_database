@@ -11,24 +11,23 @@ import requests
 import hashlib
 import json 
 
-def printResponse(response, response_data):
+def printResponse(response):
   print(response.status_code)
+  response_data = response.json()
   print(json.dumps(response_data, sort_keys=True, indent=4, separators=(',', ': ')))
 
 class Bewhere:
-  ## sets up the local variables for the username/password
+  # sets up the local variables for the username/password
   def __init__(self, username, password, account_key):
     self.username=username
     self.password=password
     self.account_key=account_key 
 
-  ## authenticates user and adds token to header for future requests
+  ## AUTHENTICATION 
   def login(self):
     url = "https://api.bewhere.com" + "/authentication/" + self.username + "?type=m2m" #type of account = machine to machine (m2m) 
-    response = requests.get(url)       # response contains: token and salt
+    response = requests.get(url)       # contains: token and salt
     response_data = response.json()
-    # NOTE: DEBUG
-    #printResponse(response, response_data)
     hashGen = hashlib.sha256()
      
     # Hash our password
@@ -57,34 +56,37 @@ class Bewhere:
  
     url = "https://api.bewhere.com" + "/authentication"
     response = requests.post(url, json=data, headers=self.headers)
-    response_data = response.json()
-    # NOTE: DEBUG
-    printResponse(response, response_data)
+    return response
 
-## returns the most recent data for all modules
- # add `/{id}` to get the most recent data for a specific module
+  ##ACCOUNTS
+  # returns list of all accounts with details
+  def get_accounts(self):
+    url = "https://api.bewhere.com" +"/accounts/" + self.account_key + "/users"
+    response = requests.get(url, headers=self.headers)
+    return response
+
+  # returns single account with details
+  def get_account(self):
+    url = "https://api.bewhere.com" +"/accounts/" + self.account_key + "/users/" + self.username
+    response = requests.get(url, headers=self.headers)
+    return response
+
+  ##OTHER
+  # returns the most recent data for all modules
+  # TODO: snapshots -- add `/{id}` to get the most recent data for a specific module
   def snapshots(self):
     url = "https://api.bewhere.com" + "/accounts/" + self.account_key + "/snapshots"
     response = requests.get(url, headers=self.headers)
-    response_data = response.json()
-    # NOTE: DEBUG
-    #printResponse(response, response_data)
-    return response_data
+    return response
 
-## returns data in a specific date range for a specific module
+  # returns data in a specific date range for a specific module
   def stream(self, module, startTime, endTime):
     url = "https://api.bewhere.com" + "/accounts/" + self.account_key + "/streams/" + module + "?start=%d&end=%d" % (startTime, endTime)
     response = requests.get(url, headers=self.headers)
-    response_data = response.json()
-    # NOTE: DEBUG stmt
-    #printResponse(response, response_data)
-    return response_data
+    return response
 
-## returns data in a specific date range for ALL the modules
+  # returns data in a specific date range for ALL the modules
   def streamHistory(self):
     url = "https://api.bewhere.com" + "/accounts/" + self.account_key + "/streams/history" + "?limit=100&start=1535004719000&end=1535062019000"
     response = requests.get(url, headers=self.headers)
-    response_data = response.json()
-    # NOTE: DEBUG stmt
-    #printResponse(response, response_data)
-    return response_data
+    return response

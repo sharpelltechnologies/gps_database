@@ -14,7 +14,8 @@ from time import *
 def parseTime(timeString):
   return strptime(timeString, "%Y %m %d %H %M %Z")
 
-def parseData(data):
+def parseResponse(r):
+  data = r.json()
   module = {}
   module["points"] = []
   for i in data:
@@ -25,6 +26,7 @@ def parseData(data):
     temp["timestamp"] = i["timestamp"]
     temp["timestampLong"] = asctime(epochToLocaltime(i["timestamp"]))
     module["points"].append(temp)
+  print "Number of points:", len(data) 
   return json.dumps(module, sort_keys=True, indent=4, separators=(',', ': '))
 
 ## converts struct_time in local time to milliseconds since epoch
@@ -40,12 +42,13 @@ def dateRange(user, module, start, end):
   etE = localtimeToEpoch(end)   
   st = epochToLocaltime(stE) 
   et = epochToLocaltime(etE)
-  data = user.stream(module, stE, etE)
+  r = user.stream(module, stE, etE)
   
+  print r.status_code
   print "Human Start Time (PST): ", st 
   print "Epoch Start Time (milliseconds): ", 
   print "%d" % (stE)
   print "Human End Time (PST): ", et
   print "Epoch End Time (milliseconds): ",
   print "%d" % (etE)
-  print parseData(data)
+  print parseResponse(r)
